@@ -35,6 +35,8 @@ class Settings:
     max_context_chars: int
     input_usd_per_million_tokens: float | None
     output_usd_per_million_tokens: float | None
+    google_search_api_key: str | None
+    google_search_engine_id: str | None
 
     @classmethod
     def from_environment(cls) -> "Settings":
@@ -42,6 +44,13 @@ class Settings:
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("GROQ_API_KEY is required. Add it to .env or your environment.")
+
+        google_api_key = os.getenv("GOOGLE_SEARCH_API_KEY") or None
+        google_engine_id = os.getenv("GOOGLE_SEARCH_ENGINE_ID") or None
+        if (google_api_key is None) != (google_engine_id is None):
+            raise ValueError(
+                "GOOGLE_SEARCH_API_KEY and GOOGLE_SEARCH_ENGINE_ID must both be set to enable Google search."
+            )
 
         return cls(
             groq_api_key=api_key,
@@ -56,4 +65,6 @@ class Settings:
             output_usd_per_million_tokens=_optional_nonnegative_float(
                 "GROQ_OUTPUT_USD_PER_MILLION_TOKENS"
             ),
+            google_search_api_key=google_api_key,
+            google_search_engine_id=google_engine_id,
         )

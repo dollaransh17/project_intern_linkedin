@@ -79,12 +79,21 @@ class TokenUsage(StrictModel):
     estimated_cost_usd: float | None = Field(default=None, ge=0.0)
 
 
+class ExternalSearchResult(StrictModel):
+    query: str = Field(description="The external search query used to find supporting evidence.")
+    title: str = Field(description="The title returned by the external search provider.")
+    url: HttpUrl = Field(description="The external result URL.")
+    snippet: str = Field(description="The search result snippet used as supporting evidence.")
+    provider: str = Field(description="The external search provider name.")
+
+
 class DomainResult(StrictModel):
     domain: str
     pages_crawled: list[HttpUrl]
     intelligence: CompanyIntelligence | None
     errors: list[PipelineError]
     token_usage: TokenUsage | None
+    external_searches: list[ExternalSearchResult] = Field(default_factory=list)
 
 
 class RunOutput(StrictModel):
